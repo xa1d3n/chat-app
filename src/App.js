@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 import SignIn from './SignIn';
+import Conversation from './Conversation';
 import { firebaseConfig } from './config/firebase';
 
 import 'firebase/firestore';
@@ -31,7 +32,7 @@ const App = () => {
       </header>
 
       <section>
-        {user ? <div>signed in</div> : <SignIn auth={auth}/>}
+        {user ? <Conversation /> : <SignIn auth={auth}/>}
       </section>
     </div>
   );
