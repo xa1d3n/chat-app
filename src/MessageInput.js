@@ -1,30 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import {
-  collection,
-  addDoc,
-  getFirestore,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { addDoc } from 'firebase/firestore';
 
 const MessageInput = ({ mesagesRef }) => {
   const [userInput, setUserInput] = useState('');
-  const db = getFirestore();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const auth = getAuth();
-    const { uid, photoURL } = auth.currentUser;
+    const { uid, photoURL, displayName } = auth.currentUser;
 
     try {
-      const docRef = await addDoc(collection(db, 'messages'), {
+      addDoc(mesagesRef, {
+        avatarUrl: photoURL,
+        userName: displayName,
         text: userInput,
-        createdAt: serverTimestamp(),
+        createdAt: Date.now(),
         uid,
       });
-      console.log('Document written with ID: ', docRef.id);
+      console.log('Document written with ID: ');
     } catch (e) {
       console.error('Error adding document: ', e);
     }
@@ -34,14 +30,10 @@ const MessageInput = ({ mesagesRef }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
-        value={userInput}
-        onChange={(e) => setUserInput(e.target.value)}
-        placeholder="say something nice"
-      />
+      <input value={userInput} onChange={(e) => setUserInput(e.target.value)} />
 
       <button type="submit" disabled={!userInput}>
-        🕊️
+        Send >
       </button>
     </form>
   );

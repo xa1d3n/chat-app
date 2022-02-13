@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import './App.css';
 import SignIn from './SignIn';
 import Conversation from './Conversation';
@@ -8,7 +8,8 @@ import 'firebase/firestore';
 
 import { initializeApp } from "firebase/app"
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { getAuth, signOut } from "firebase/auth";
+import { getAuth } from "firebase/auth";
+import Header from './Header';
 
 const firebaseApp = initializeApp(firebaseConfig);
 
@@ -17,20 +18,10 @@ const auth = getAuth(firebaseApp);
 
 const App = () => {
   const [user] = useAuthState(auth);
-  const handleSignOut = () => {
-    signOut(auth).then(() => {
-      console.log("singed out")
-    }).catch((error) => {
-      console.log("sign out error")
-    });
-  }
 
   return (
     <div className="App">
-      <header>
-        {auth.currentUser && <button onClick={handleSignOut}>SignOut</button>}
-      </header>
-
+      <Header auth={auth } />
       <section>
         {user ? <Conversation /> : <SignIn auth={auth}/>}
       </section>
