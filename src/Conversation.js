@@ -5,7 +5,7 @@ import {
   query,
   orderBy,
   limit,
-  onSnapshot,
+  getDocs,
 } from 'firebase/firestore';
 import './App.css';
 
@@ -17,19 +17,23 @@ const Conversation = () => {
   const bottom = useRef(null);
 
   const db = getFirestore();
-  const mesagesRef = collection(db, 'messages');
+  const messagesRef = collection(db, 'messages');
 
   useEffect(() => {
-    const q = query(mesagesRef, orderBy('createdAt'), limit(20));
-    onSnapshot(q, (snapshot) => {
-      const data = [];
-      snapshot.docs.forEach((doc) => {
-        data.push({ ...doc.data(), id: doc.id})
-      });
-      setMessages(data);
-      bottom.current.scrollIntoView({ behavior: 'smooth' });
-    });
-  });
+    const getMessages = async () => {
+      const docsRef = await getDocs(
+        query(messagesRef, orderBy('timeStamp'), limit(20))
+      );
+      const messagesList = docsRef.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc?.id,
+      }));
+
+      setMessages(messagesList);
+    };
+
+    getMessages();
+  }, [messagesRef]);
 
   useEffect(() => {
     bottom.current.scrollIntoView({ behavior: 'smooth' });
@@ -43,7 +47,7 @@ const Conversation = () => {
         ))}
         <span ref={bottom}></span>
       </main>
-      <MessageInput mesagesRef={mesagesRef} bottomRef={bottom} />
+      <MessageInput messagesRef={messagesRef} bottomRef={bottom} />
     </>
   );
 };
